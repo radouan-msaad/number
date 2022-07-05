@@ -38,6 +38,7 @@
   $(document).on("pagecreate","#page1",function(){
     var i=0;
     var t;
+    var t1;
  function Shuffle(ar){
   if(!Array.isArray(ar))
     ar=Array.from(ar);
@@ -178,6 +179,9 @@
    for(var j=11;j<1000;j++){
     arr.push(''+j);
    }
+   arr = Shuffle(arr);
+   $("#ltr").html(arr[0]);
+      $("#lettre").html(NumberToLetter(arr[0]));
     $("#btn").click(function(){
       $("#btn").attr("disabled","");
        arr = Shuffle(arr);
@@ -191,7 +195,16 @@
       if(i==26){
       
       $("#ltr").html(arr[i]);
-      $("#lettre").html("");
+      var k=1;
+        $("#lettre").html("0 (5)");
+        t1= setInterval(function (){
+          if(k==5)
+          clearInterval(t1);
+          else{
+          $("#lettre").html(k+" (5)");
+          k++;
+          }
+        },1000);
       setTimeout(function() {
        $("#lettre").html(NumberToLetter(arr[i])); 
        $("#btn").removeAttr("disabled");
@@ -219,9 +232,9 @@
   </div>
 
   <div data-role="main" class="ui-content">
-  <div id="lettre" class="alert alert-info text-center">cent dix</div>
+  <div id="lettre" class="alert alert-info text-center"></div>
  <div id="ltr" class="alert alert-danger text-center shadow">
-  110</div>
+  </div>
 </div>
 
 </div>

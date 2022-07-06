@@ -5,12 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Radouan Number</title>
- <!--<link rel="stylesheet" href="jquery.mobile-1.4.5.min.css">
+<!--<link rel="stylesheet" href="jquery.mobile-1.4.5.min.css">
 <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
   <script type="text/javascript" src="jquery-1.11.3.min.js"></script> 
   <script type="text/javascript" src="jquery.mobile-1.4.5.min.js"></script>
-   -->
-
+  -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
 <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -18,7 +17,7 @@
 
   <style>
   #ltr{
-    font-size: 200px;
+    font-size: 140px;
   }
   #btn{
     width:96%;
@@ -40,7 +39,11 @@
     var i=0;
     var t;
     var t1;
+    var second = 6;
+    var z = 0 //no change if z=1;
+    var arr = [];
     var lang = $("#lang").val();
+    var interval = $("#interval").val();
  function Shuffle(ar){
   if(!Array.isArray(ar))
     ar=Array.from(ar);
@@ -54,10 +57,24 @@
     ar=ar.join('');
   return ar;
 }
+change();
 $('#lang').on('change', function (e) {
     var option = $("option", this);
      lang = this.value;
+     changeH();
    });
+ $('#interval').on('change', function (e) {
+    var option = $("option", this);
+     interval = this.value;
+     change();
+     changeH();
+ });
+   function change(){
+    arr = [];
+   for(var j=1;j<interval;j++){
+    arr.push(''+j);
+   }
+   }
   function NumberToLetter(nombre, U=null, D=null) {
     	
     	var letter = {
@@ -177,53 +194,63 @@ $('#lang').on('change', function (e) {
 
         return numberToLetter;
 
-    }//-----------------------------------------------------------------------
-function Number_to_words(num){
-  var ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
-              'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
-              'seventeen', 'eighteen', 'nineteen'];
-  var tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty',
-              'ninety'];
+    }//-----------------------------------------------------------------------/
+ //American Numbering System
+//var th = ['','thousand','million', 'billion','trillion'];
+// uncomment this line for English Number System
+var th = ['','thousand','million', 'milliard','billion'];
+var dg = ['zero','one','two','three','four',
+'five','six','seven','eight','nine'];
+var tn =['ten','eleven','twelve','thirteen', 'fourteen','fifteen','sixteen',
+'seventeen','eighteen','nineteen']; 
+var tw = ['twenty','thirty','forty','fifty',
+'sixty','seventy','eighty','ninety'];
 
-  var numString = num.toString();
-
-  if (num < 0) throw new Error('Negative numbers are not supported.');
-
-  if (num === 0) return 'zero';
-
-  //the case of 1 - 20
-  if (num < 20) {
-    return ones[num];
-  }
-
-  if (numString.length === 2) {
-    return tens[numString[0]] + ' ' + ones[numString[1]];
-  }
-
-  //100 and more
-  if (numString.length == 3) {
-    if (numString[1] === '0' && numString[2] === '0')
-      return ones[numString[0]] + ' hundred';
-    else
-      return ones[numString[0]] + ' hundred and ' + Number_to_words(+(numString[1] + numString[2]));
-  }
-
-  if (numString.length === 4) {
-    var end = +(numString[1] + numString[2] + numString[3]);
-    if (end === 0) return ones[numString[0]] + ' thousand';
-    if (end < 100) return ones[numString[0]] + ' thousand and ' + Number_to_words(end);
-    return ones[numString[0]] + ' thousand ' + Number_to_words(end);
-  }
-  
-}//------------------------------------------
-  
-   var arr = [];
-   for(var j=11;j<1000;j++){
-    arr.push(''+j);
-   }
-   arr = Shuffle(arr);
+function toWords(s){
+s = s.toString();
+s =s.replace(/[\, ]/g,'');
+if (s != parseFloat(s)) 
+return 'not a number';
+var x =s.indexOf('.');
+if (x == -1) x = s.length;
+if (x > 15) 
+return 'too big';
+var n =s.split('');
+var str = '';
+var sk = 0;
+for (var i=0; i < x; i++) {
+ if((x-i)%3==2) {if (n[i] == '1') {
+  str += tn[Number(n[i+1])] + ' '; i++; sk=1;}
+else if (n[i]!=0) {
+ str += tw[n[i]-2] + ' ';
+sk=1;
+}} 
+else if (n[i]!=0) {
+  str +=dg[n[i]] +' ';
+  if ((x-i)%3==0) str += 'hundred ';sk=1;}
+  if ((x-i)%3==1) {
+  if (sk) str += th[(x-i-1)/3] + ' ';sk=0;}}
+  if (x != s.length) {
+  var y = s.length; 
+  str +='point ';
+for (var i=x+1; istr.replace(/\s+/g,' '););
+}
+return str;
+}
+ 
+   function changeH(){
+     
+     if(z==0){
+    arr = Shuffle(arr);
+   if(lang=="fr")
+       var funct = NumberToLetter;
+     else
+       var funct = toWords;
    $("#ltr").html(arr[0]);
-      $("#lettre").html(NumberToLetter(arr[0]));
+      $("#lettre").html(funct(arr[0]));
+   }
+   }
+   changeH();
     $("#btn").click(function(){
       $("#btn").attr("disabled","");
        arr = Shuffle(arr);
@@ -233,33 +260,37 @@ function Number_to_words(num){
       if(lang=="fr")
        var funct = NumberToLetter;
      else
-       var funct = Number_to_words;
+       var funct = toWords;
       clearInterval(t);
+      z=1;
     t = setInterval(function(){
-      
-      if(i==26){
-      
+      if(interval == 10)
+        var intr = 8;
+      else
+        var intr = 26;
+      if(i==intr){
       $("#ltr").html(arr[i]);
       var k=1;
-        $("#lettre").html("0 (5)");
+        $("#lettre").html("0 ("+second+" s)");
         t1= setInterval(function (){
-          if(k==5)
+          if(k==second)
           clearInterval(t1);
           else{
-          $("#lettre").html(k+" (5)");
+          $("#lettre").html(k+" ("+second+" s)");
           k++;
           }
         },1000);
+        var t2 = second*1000;
       setTimeout(function() {
        $("#lettre").html(funct(arr[i])); 
        $("#btn").removeAttr("disabled");
        i=0;
-      },5000);
+       z=0;
+      },t2);
       clearInterval(t);
       
       }
      else{
-       
       $("#ltr").html(arr[i]);
       $("#lettre").html(funct(arr[i]));
       i++;
@@ -275,7 +306,14 @@ function Number_to_words(num){
   <div data-role="header">
     <div class="row">
   <div class="col"><button id="btn" class="mx-3">start</button> </div>
-  <div class="col-4 col-md-2">
+  <div class="col-3 col-md-1">
+    <select id="interval">
+      <option value="10" selected>10</option>
+      <option value="100">100</option>
+      <option value="1000">1000</option>
+    </select>
+  </div>
+   <div class="col-4 col-md-2">
     <select id="lang">
       <option value="fr" selected>Français</option>
       <option value="eng">English</option>
